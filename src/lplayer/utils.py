@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# utils.py
+# This file is part of lplayer
 #
-# This file is part of yoaup (YouTube Audio Player)
+# Copyright (c) 2017-2019 Lorenzo Carbonell Cerezo <a.k.a. atareao>
 #
-# Copyright (C) 2017
-# Lorenzo Carbonell Cerezo <lorenzo.carbonell.cerezo@gmail.com>
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 
-import requests
 import gi
 try:
     gi.require_version('GdkPixbuf', '2.0')
@@ -48,30 +49,6 @@ except Exception as e:
 
 
 NOIMAGE = GdkPixbuf.Pixbuf.new_from_file_at_size(comun.NOIMAGE_ICON, 256, 256)
-
-
-def download_file(url, local_filename):
-    # NOTE the stream=True parameter
-    try:
-        r = requests.get(url, stream=True)
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-        return True
-    except Exception as e:
-        print(e)
-    return False
-
-
-def read_remote_file(url):
-    try:
-        r = requests.get(url, stream=True)
-        if r.status_code == 200:
-            return r.text
-    except Exception as e:
-        print(e)
-    return None
 
 
 def select_value_in_combo(combo, value):
@@ -109,27 +86,6 @@ def get_pixbuf_from_base64string(base64string):
     except Exception as e:
         print(e)
     return NOIMAGE
-
-
-def from_remote_image_to_base64(image_url):
-    base64string = None
-    try:
-        r = requests.get(image_url, timeout=5, verify=False)
-        if r.status_code == 200:
-            writer_file = io.BytesIO()
-            for chunk in r.iter_content(1024):
-                writer_file.write(chunk)
-            old_image = Image.open(writer_file)
-            old_image.thumbnail((128, 128), Image.ANTIALIAS)
-            new_image = io.BytesIO()
-            old_image.save(new_image, "png")
-            base64string = base64.b64encode(new_image.getvalue())
-    except Exception as e:
-        print(e)
-    if base64string is not None:
-        return base64string.decode()
-    return None
-
 
 def get_thumbnail_filename_for_audio(audio):
     thumbnail_filename = os.path.join(comun.THUMBNAILS_DIR,
